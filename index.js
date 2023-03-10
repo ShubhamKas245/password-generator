@@ -10,23 +10,28 @@ const symbolsCheck=document.querySelector("#symbols");
 const indicator=document.querySelector("[data-indicator]");
 const generateBtn=document.querySelector(".generateButton");
 const allCheckBox=document.querySelectorAll("input[type=checkbox]");
-const symbols='~!@#$%^&+()*_-{}[]:;?/><';
+const symbols='~!@#$%^&+()*_-=|{}[]:;?/,.><';
 
 let password="";
+// let color;
 let passwordLength=10;
 let checkCount=0;
 handleSlider();
+
+setIndicator("#ccc");
 
 // set passwordLength
 function handleSlider(){
     inputSlider.value=passwordLength;
     lengthDisplay.innerText=passwordLength;
-    // allCheckBox.innerHTML=checkCount;
+    const min=inputSlider.min;
+    const max=inputSlider.max;
+    inputSlider.style.backgroundSize=((passwordLength-min)*100/(max-min))+ "100%";
 }
 
-function setIndicator(){
-    indicator.style.backgroundColor=color;
-    // shadow
+function setIndicator(color){
+    indicator.style.backgroundColor = color;
+    indicator.style.boxShadow=`0px 0px 12px 1px ${color}`;
 }
 
 function getRandomInteger(min,max){
@@ -46,22 +51,22 @@ function generateUpperCase(){
 
 function generateSymbols(){
     const randNum=getRandomInteger(0,symbols.length);
-    return symbols.chartAt(randNum);
+    return symbols.charAt(randNum);
 }
 
 function calcStrength(){
     let hasUpper=false;
     let hasLower=false;
     let hasNum=false;
-    let hassym=false;
+    let hasym=false;
     if(uppercaseCheck.checked) hasUpper=true;
     if(lowercaseCheck.checked) hasLower=true;
     if(numbersCheck.checked) hasNum=true;
-    if(symbolsCheck.checked) hassym=true;
+    if(symbolsCheck.checked) hasym=true;
 
-    if(hasUpper && hasLower && (hasNum || hassym) && passwordLength >=8){
+    if(hasUpper && hasLower && (hasNum || hasym) && passwordLength >=8){
         setIndicator("#0f0");
-    }else if((hasLower || hasUpper) && (hasNum || hassym) && passwordLength >=6) {
+    }else if((hasLower || hasUpper) && (hasNum || hasym) && passwordLength >=6) {
         setIndicator("#ff0");
     }else{
         setIndicator("#f00");
@@ -111,7 +116,7 @@ function checkboxChange(){
 }
 
 allCheckBox.forEach((checkbox)=>{
-    checkbox.addEventListener("change",checkboxChange());
+    checkbox.addEventListener("change",checkboxChange);
 })
 
 inputSlider.addEventListener("input",(e)=>{
@@ -120,9 +125,8 @@ inputSlider.addEventListener("input",(e)=>{
 })
 
 copyBtn.addEventListener("click",()=>{
-    if(passwordDisplay.value){
+    if(passwordDisplay.value)
         copyContent();
-    }
 })
 
 generateBtn.addEventListener("click",()=>{
@@ -133,6 +137,7 @@ generateBtn.addEventListener("click",()=>{
         passwordLength = checkCount;
         handleSlider();
      }
+     console.log("starting the journey")
 
      // remove old password
      password="";
@@ -168,14 +173,15 @@ generateBtn.addEventListener("click",()=>{
      
     // compulsory additions
     for(let i=0;i<funArr.length; i++){
-        password+=funArr[i]();
+        password+=funArr[i];
     } 
+    console.log("complusory addtion done");
 
     // remaining addition
 
     for(let i=0;i<passwordLength-funArr.length;i++){
         let ranIndex=getRandomInteger(0,funArr.length);
-        password+=funArr[ranIndex]();
+        password += funArr[ranIndex];
     }
 
     // shuffle passoword
@@ -183,6 +189,7 @@ generateBtn.addEventListener("click",()=>{
 
     // show in UI
     passwordDisplay.value=password;
+    console.log("UI Done")
     
     // calculate strength
     calcStrength();
